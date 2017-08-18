@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="shop-client-mgrsite:war">
+    <output-path>$PROJECT_DIR$/shop-client-mgrsite/target</output-path>
+    <root id="archive" name="shop-client-mgrsite-1.0-SNAPSHOT.war">
+      <element id="artifact" artifact-name="shop-client-mgrsite:war exploded" />
+    </root>
+  </artifact>
+</component>

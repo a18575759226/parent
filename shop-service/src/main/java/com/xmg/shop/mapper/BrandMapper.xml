@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xmg.shop.mapper.BrandMapper">
+	<resultMap id="BaseResultMap" type="com.xmg.shop.domain.Brand">
+		<id column="id" property="id"/>
+		<result column="created_date" property="createdDate"/>
+		<result column="last_modified_date" property="lastModifiedDate"/>
+		<result column="version" property="version"/>
+		<result column="found_date" property="foundDate"/>
+		<result column="logo" property="logo"/>
+		<result column="chinese_name" property="chineseName"/>
+		<result column="english_name" property="englishName"/>
+		<result column="description" property="description"/>
+		<result column="url" property="url"/>
+		<result column="sequence" property="sequence"/>
+		<result column="mods" property="mods"/>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from brand
+    where id = #{id}
+  </delete>
+	<insert id="insert" keyProperty="id" parameterType="com.xmg.shop.domain.Brand" useGeneratedKeys="true">
+    insert into brand (created_date, last_modified_date, 
+      version, found_date, logo, 
+      chinese_name, english_name, description, 
+      url, sequence, mods)
+    values (#{createdDate}, #{lastModifiedDate}, 
+      #{version}, #{foundDate}, #{logo}, 
+      #{chineseName}, #{englishName}, #{description}, 
+      #{url}, #{sequence}, #{mods})
+  </insert>
+	<update id="updateByPrimaryKey">
+    update brand
+    set created_date = #{createdDate},
+      last_modified_date = #{lastModifiedDate},
+      version = #{version},
+      found_date = #{foundDate},
+      logo = #{logo},
+      chinese_name = #{chineseName},
+      english_name = #{englishName},
+      description = #{description},
+      url = #{url},
+      sequence = #{sequence},
+      mods = #{mods}
+    where id = #{id}
+  </update>
+	<select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select id, created_date, last_modified_date, version, found_date, logo, chinese_name, 
+    english_name, description, url, sequence, mods
+    from brand
+    where id = #{id}
+  </select>
+	<select id="selectAll" resultMap="BaseResultMap">
+    select id, created_date, last_modified_date, version, found_date, logo, chinese_name, 
+    english_name, description, url, sequence, mods
+    from brand
+  </select>
+
+</mapper>

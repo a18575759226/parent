@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans
+        xmlns="http://www.springframework.org/schema/beans"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:context="http://www.springframework.org/schema/context"
+        xmlns:aop="http://www.springframework.org/schema/aop"
+        xmlns:tx="http://www.springframework.org/schema/tx"
+        xmlns:mvc="http://www.springframework.org/schema/mvc"
+        xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+        xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+	   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+	   http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+	   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!--开启注解扫描-->
+    <mvc:annotation-driven/>
+    <context:annotation-config/>
+    <context:component-scan base-package="com.xmg.shop"/>
+
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+        <property name="driverClassName" value="${db.driver}"/>
+        <property name="url" value="${db.url}"/>
+        <property name="username" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="configLocation" value="classpath:myBatis-config.xml"/>
+        <property name="typeAliasesPackage" value="com.xmg.shop"/>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:advice id="advice" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="list*" read-only="true"/>
+            <tx:method name="get*" read-only="true"/>
+            <tx:method name="query*" read-only="true"/>
+            <tx:method name="select*" read-only="true"/>
+            <tx:method name="*"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config>
+        <aop:pointcut expression="execution(* com.xmg.shop.service.*Service.*(..))" id="pointCut"/>
+        <aop:advisor advice-ref="advice" pointcut-ref="pointCut"/>
+    </aop:config>
+
+    <!--
+    <mybatis:scan base-package="com.xmg.p2p.base.mapper"/>
+     -->
+
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="com.xmg.shop.mapper"/>
+    </bean>
+
+    <bean class="com.xmg.shop.service.impl.ProductServiceImpl" id="productService"/>
+    <bean class="com.xmg.shop.service.impl.BrandServiceImpl" id="brandService"/>
+    <bean class="com.xmg.shop.service.impl.LoginInfoServiceImpl" id="loginInfoService"/>
+    <bean class="com.xmg.shop.service.impl.CatalogServiceImpl" id="catalogService"/>
+    <bean class="com.xmg.shop.service.impl.CatalogPropertyServiceImpl" id="catalogPropertyService"/>
+    <bean class="com.xmg.shop.service.impl.CatalogPropertyValueServiceImpl" id="catalogPropertyValueService"/>
+    <bean class="com.xmg.shop.service.impl.ProductDescServiceImpl" id="productDescService"/>
+    <bean class="com.xmg.shop.service.impl.ProductImageServiceImpl" id="productImageService"/>
+    <bean class="com.xmg.shop.service.impl.ProductSkuServiceImpl" id="productSkuService"/>
+    <bean class="com.xmg.shop.service.impl.SkuPropertyServiceImpl" id="skuPropertyService"/>
+    <bean class="com.xmg.shop.service.impl.SkuPropertyValueService" id="skuPropertyValueService"/>
+    <bean class="com.xmg.shop.service.impl.TrademarkServiceImpl" id="trademarkService"/>
+    <bean class="com.xmg.shop.service.impl.OrderInfoServiceImpl" id="orderInfoService"/>
+
+
+    <!--//1,配置服务应用名-->
+    <dubbo:application name="shop-server"/>
+
+    <!--//2,配置协议-->
+    <dubbo:protocol name="dubbo" port="20880"/>
+
+    <!--//3,配置注册中心-->
+    <!--register默认为true，如果为true，就是要把服务注册到注册中心，如果为false，不需要把服务注册到注册中心-->
+    <!--file属性是在客户端第一次调用服务时，把服务列表缓存到客户端自定义的一个文件中-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181" register="true" file="${user.home}/dubbo.cache"/>
+
+    <!--//4，发布服务-->
+    <dubbo:service interface="com.xmg.shop.service.IProductService" ref="productService"/>
+    <dubbo:service interface="com.xmg.shop.service.IBrandService" ref="brandService"/>
+    <dubbo:service interface="com.xmg.shop.service.ILoginInfoService" ref="loginInfoService"/>
+    <dubbo:service interface="com.xmg.shop.service.ICatalogService" ref="catalogService"/>
+    <dubbo:service interface="com.xmg.shop.service.ICatalogPropertyService" ref="catalogPropertyService"/>
+    <dubbo:service interface="com.xmg.shop.service.ICatalogPropertyValueService" ref="catalogPropertyValueService"/>
+    <dubbo:service interface="com.xmg.shop.service.IProductImageService" ref="productImageService"/>
+    <dubbo:service interface="com.xmg.shop.service.IProductDescService" ref="productDescService"/>
+    <dubbo:service interface="com.xmg.shop.service.IProductSkuService" ref="productSkuService"/>
+    <dubbo:service interface="com.xmg.shop.service.ISkuPropertyService" ref="skuPropertyService"/>
+    <dubbo:service interface="com.xmg.shop.service.ITrademarkService" ref="trademarkService"/>
+    <dubbo:service interface="com.xmg.shop.service.ISkuPropertyValueService" ref="skuPropertyValueService"/>
+    <dubbo:service interface="com.xmg.shop.service.ISkuPropertyService" ref="skuPropertyService"/>
+    <dubbo:service interface="com.xmg.shop.service.IOrderInfoService" ref="orderInfoService"/>
+
+
+</beans>

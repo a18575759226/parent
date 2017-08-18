@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.shop.mapper.TrademarkMapper">
+    <resultMap id="BaseResultMap" type="com.xmg.shop.domain.Trademark">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="englishName" property="englishName" />
+        <result column="url" property="url" />
+        <result column="img" property="img" />
+        <result column="describe" property="describe" />
+        <result column="sort" property="sort" />
+        <result column="state" property="state" />
+    </resultMap>
+    <delete id="deleteByPrimaryKey" >
+    delete from trademark
+    where id = #{id}
+  </delete>
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id">
+    insert into trademark (name,englishName,url,img,`describe`,sort,state)
+    values (#{name},#{englishName},#{url},#{img},#{describe},#{sort},#{state})
+  </insert>
+    <update id="updateByPrimaryKey" >
+    update trademark
+    set name = #{name},
+      englishName = #{englishName},
+      url = #{url},
+      img = #{img},
+      'describe' = #{describe},
+      sort = #{sort},
+      state = #{state}
+    where id = #{id}
+  </update>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select id, name, englishName, url, img, describe, sort, state
+    from trademark
+    where id = #{id}
+  </select>
+    <select id="selectAll" resultMap="BaseResultMap">
+    select * from trademark
+  </select>
+</mapper>

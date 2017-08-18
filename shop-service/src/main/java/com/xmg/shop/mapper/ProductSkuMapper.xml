@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.shop.mapper.ProductSkuMapper">
+	<resultMap id="BaseResultMap" type="com.xmg.shop.domain.ProductSku">
+		<id column="id" property="id"/>
+		<result column="code" property="code"/>
+		<result column="price" property="price"/>
+		<result column="mods" property="mods"/>
+		<association property="product" javaType="Product" columnPrefix="pr_">
+			<id property="id" column="id"/>
+			<result property="name" column="name"/>
+		</association>
+	</resultMap>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+	    delete from product_sku
+	    where id = #{id}
+  	</delete>
+	<delete id="deleteByProductId">
+		DELETE FROM product_sku where product_id = #{productId}
+	</delete>
+
+	<insert id="insert" parameterType="com.xmg.shop.domain.ProductSku" useGeneratedKeys="true" keyProperty="id">
+	    insert into product_sku (product_id, code, price, 
+	      mods)
+	    values (#{product.id}, #{code}, #{price},
+	      #{mods})
+  	</insert>
+	<update id="updateByPrimaryKey">
+	    update product_sku
+	    set product_id = #{product.id},
+	      code = #{code},
+	      price = #{price},
+	      mods = #{mods}
+	    where id = #{id}
+  	</update>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	    select id, product_id, code, price, mods
+	    from product_sku
+	    where id = #{id}
+  	</select>
+	<select id="selectAll" resultMap="BaseResultMap">
+	    select id, product_id, code, price, mods
+	    from product_sku
+  	</select>
+
+	<!--根据产品id查询产品的sku属性-->
+	<select id="listProductSkuById" resultType="com.xmg.shop.domain.ProductSku">
+		SELECT * FROM product_sku WHERE product_id = #{productId}
+	</select>
+</mapper>

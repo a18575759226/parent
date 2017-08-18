@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.shop.mapper.LoginInfoMapper">
+	<resultMap id="BaseResultMap" type="com.xmg.shop.domain.LoginInfo">
+		<id column="id" property="id"/>
+		<result column="user_name" property="userName"/>
+		<result column="password" property="password"/>
+		<result column="state" property="state"/>
+		<result column="user_type" property="userType"/>
+	</resultMap>
+
+	<insert id="insert" parameterType="com.xmg.shop.domain.LoginInfo" useGeneratedKeys="true" keyProperty="id">
+	    insert into login_info (user_name, password, state,
+	      user_type)
+	    values (#{userName}, #{password}, #{state},
+	      #{userType})
+  	</insert>
+
+	<update id="updateByPrimaryKey">
+	    update login_info
+	    set user_name = #{userName},
+	      password = #{password},
+	      state = #{state},
+	      user_type = #{userType}
+	    where id = #{id}
+  	</update>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	    select id, user_name, password, state, user_type
+	    from login_info
+	    where id = #{id}
+  	</select>
+
+	<select id="checkLogin" resultType="com.xmg.shop.domain.LoginInfo">
+		SELECT id, user_name, password, state, user_type FROM login_info
+		WHERE user_name = #{username} AND password = #{password}
+	</select>
+
+</mapper>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.shop.mapper.ProductCatalogPropertyValueMapper">
+	<resultMap id="BaseResultMap" type="com.xmg.shop.domain.ProductCatalogPropertyValue">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="value" property="value"/>
+		<association property="product" javaType="Product" columnPrefix="p_">
+			<id property="id" column="id"/>
+			<result property="name" column="name"/>
+		</association>
+	</resultMap>
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    	delete from product_catalog_property_value
+    	where id = #{id}
+  	</delete>
+
+	<insert id="insert" parameterType="com.xmg.shop.domain.ProductCatalogPropertyValue" useGeneratedKeys="true"
+	        keyProperty="id">
+	    insert into product_catalog_property_value (product_id, name, value
+	      )
+	    values (#{product.id}, #{name}, #{value}
+	      )
+  	</insert>
+
+	<update id="updateByPrimaryKey">
+	    update product_catalog_property_value
+	    set product_id = #{product.id},
+	      name = #{name},
+	      value = #{value}
+	    where id = #{id}
+  	</update>
+	<sql id="base_column">
+		pcp.id, pcp.product_id, pcp.name, pcp.value,p.id as p_id, p.name as p_name
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	    select <include refid="base_column"/>
+	    from product_catalog_property_value pcp LEFT JOIN product p ON pcp.product_id = p.id
+	    where pcp.id = #{id}
+  	</select>
+
+	<select id="selectAll" resultMap="BaseResultMap">
+	    select id, product_id, name, value
+	    from product_catalog_property_value
+  	</select>
+</mapper>

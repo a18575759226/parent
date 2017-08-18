@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.shop.mapper.OrderInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.xmg.shop.domain.OrderInfo" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="order_sn" property="orderSn" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="order_status" property="orderStatus" jdbcType="TINYINT" />
+    <result column="shipping_status" property="shippingStatus" jdbcType="TINYINT" />
+    <result column="pay_status" property="payStatus" jdbcType="TINYINT" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="mobile" property="mobile" jdbcType="VARCHAR" />
+    <result column="country" property="country" jdbcType="VARCHAR" />
+    <result column="province" property="province" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="district" property="district" jdbcType="VARCHAR" />
+    <result column="address" property="address" jdbcType="VARCHAR" />
+    <result column="zipcode" property="zipcode" jdbcType="VARCHAR" />
+    <result column="order_amount" property="orderAmount" jdbcType="DECIMAL" />
+    <result column="orderTime" property="ordertime" jdbcType="DATE" />
+  </resultMap>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from order_info
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.xmg.shop.domain.OrderInfo" useGeneratedKeys="true" keyProperty="id" >
+    insert into order_info (order_sn, user_id, order_status, 
+      shipping_status, pay_status, consignee, 
+      mobile, country, province, 
+      city, district, address, 
+      zipcode, order_amount, orderTime
+      )
+    values (#{orderSn,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{orderStatus,jdbcType=TINYINT}, 
+      #{shippingStatus,jdbcType=TINYINT}, #{payStatus,jdbcType=TINYINT}, #{consignee,jdbcType=VARCHAR}, 
+      #{mobile,jdbcType=VARCHAR}, #{country,jdbcType=VARCHAR}, #{province,jdbcType=VARCHAR}, 
+      #{city,jdbcType=VARCHAR}, #{district,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, 
+      #{zipcode,jdbcType=VARCHAR}, #{orderAmount,jdbcType=DECIMAL}, #{ordertime,jdbcType=DATE}
+      )
+  </insert>
+  <update id="updateByPrimaryKey" parameterType="com.xmg.shop.domain.OrderInfo" >
+    update order_info
+    set order_sn = #{orderSn,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=BIGINT},
+      order_status = #{orderStatus,jdbcType=TINYINT},
+      shipping_status = #{shippingStatus,jdbcType=TINYINT},
+      pay_status = #{payStatus,jdbcType=TINYINT},
+      consignee = #{consignee,jdbcType=VARCHAR},
+      mobile = #{mobile,jdbcType=VARCHAR},
+      country = #{country,jdbcType=VARCHAR},
+      province = #{province,jdbcType=VARCHAR},
+      city = #{city,jdbcType=VARCHAR},
+      district = #{district,jdbcType=VARCHAR},
+      address = #{address,jdbcType=VARCHAR},
+      zipcode = #{zipcode,jdbcType=VARCHAR},
+      order_amount = #{orderAmount,jdbcType=DECIMAL},
+      orderTime = #{ordertime,jdbcType=DATE}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select id, order_sn, user_id, order_status, shipping_status, pay_status, consignee, 
+    mobile, country, province, city, district, address, zipcode, order_amount, orderTime
+    from order_info
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, order_sn, user_id, order_status, shipping_status, pay_status, consignee, 
+    mobile, country, province, city, district, address, zipcode, order_amount, orderTime
+    from order_info
+  </select>
+
+  <sql id="base_where">
+      <where>
+        <if test="keyword!=null">
+          and order_sn = #{keyword}
+        </if>
+        <if test="state!=-1">
+          order_status= #{state}
+        </if>
+        <if test="beginDate!=null">
+          and	ordertime &gt;=#{beginDate}
+        </if>
+        <if test="endDate!=null">
+          and	ordertime &lt;= #{endDate}
+        </if>
+
+      </where>
+
+  </sql>
+
+    <select id="count" resultType="java.lang.Long">
+      select count(id) from order_info
+      <include refid="base_where"></include>
+    </select>
+
+  <select id="queryPage" resultMap="BaseResultMap">
+    SELECT  id, order_sn, user_id, order_status, shipping_status, pay_status, consignee,
+    mobile, country, province, city, district, address, zipcode, order_amount, orderTime
+    from order_info
+    <include refid="base_where"></include>
+    LIMIT #{start},#{pageSize}
+  </select>
+
+
+</mapper>

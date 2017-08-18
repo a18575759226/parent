@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.xmg.shop.mapper.ProductMapper">
+	<resultMap id="BaseResultMap" type="com.xmg.shop.domain.Product">
+		<id column="id" property="id"/>
+		<result column="created_date" property="createdDate"/>
+		<result column="last_modified_date" property="lastModifiedDate"/>
+		<result column="version" property="version"/>
+		<result column="name" property="name"/>
+		<result column="keyword" property="keyword"/>
+		<result column="code" property="code"/>
+		<result column="image" property="image"/>
+		<result column="market_price" property="marketPrice"/>
+		<result column="base_price" property="basePrice"/>
+		<result column="mods" property="mods"/>
+		<result column="impressions" property="impressions"/>
+		<association property="productBrand" javaType="Brand" columnPrefix="br_">
+			<id property="id" column="id"/>
+			<result property="chineseName" column="chinese_name"/>
+		</association>
+		<association property="catalog" javaType="Catalog" columnPrefix="ca_">
+			<id property="id" column="id"/>
+			<result property="name" column="name" />
+		</association>
+	</resultMap>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+	    delete from product
+	    where id = #{id}
+  	</delete>
+
+	<insert id="insert" parameterType="com.xmg.shop.domain.Product" useGeneratedKeys="true" keyProperty="id">
+	    insert into product (created_date, last_modified_date,
+	      version, brand_id,
+	      name, keyword, code,
+	      image, market_price, base_price,
+	      mods, impressions)
+	    values (#{createdDate}, #{lastModifiedDate},
+	      0, #{productBrand.id},
+	      #{name}, #{keyword}, #{code},
+	      #{image}, #{marketPrice}, #{basePrice},
+	      #{mods}, #{impressions})
+  	</insert>
+
+	<update id="updateByPrimaryKey">
+	    update product
+	    set
+			created_date = #{createdDate},
+			last_modified_date = #{lastModifiedDate},
+			brand_id = #{productBrand.id},
+			catalog_id = #{catalog.id},
+			name = #{name},
+			keyword = #{keyword},
+			code = #{code},
+			image = #{image},
+			market_price = #{marketPrice},
+			base_price = #{basePrice},
+			mods = #{mods},
+			impressions = #{impressions},
+			version = version + 1
+	    where id = #{id} and version = #{version}
+  	</update>
+	<sql id="base_column">
+		p.id, p.created_date, p.last_modified_date, p.version, p.catalog_id, p.brand_id, p.name,
+	    p.keyword, p.code, p.image, p.market_price, p.base_price, p.mods, p.impressions,br.id as br_id,br.chinese_name as br_chinese_name,ca.id as ca_id,ca.name as ca_name
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+	    select <include refid="base_column"/>
+	    from product p LEFT JOIN brand br ON p.brand_id = br.id
+		LEFT JOIN catalog ca ON p.catalog_id = ca.id
+	    where p.id = #{id}
+  	</select>
+	<!--高级查询条件-->
+	<sql id="base_where">
+		<where>
+			<if test="keyword!=null">
+				AND (p.name LIKE CONCAT("%",#{keyword},"%") or p.keyword LIKE CONCAT("%",#{keyword},"%"))
+			</if>
+		</where>
+	</sql>
+	<select id="selectAll" resultMap="BaseResultMap">
+	    select id, created_date, last_modified_date, version, catalog_id, brand_id, name,
+	    keyword, code, image, market_price, base_price, mods, impressions
+	    from product
+  	</select>
+	<select id="count" resultType="java.lang.Long">
+		SELECT COUNT(p.id) FROM product p
+		<include refid="base_where"/>
+	</select>
+
+	<select id="queryPage" resultMap="BaseResultMap">
+		SELECT <include refid="base_column"/>
+		from product p LEFT JOIN brand br ON p.brand_id = br.id
+		LEFT JOIN catalog ca ON p.catalog_id = ca.id
+		<include refid="base_where"/>
+		<if test="pageSize!=0">
+			LIMIT #{start},#{pageSize}
+		</if>
+	</select>
+
+	<select id="listProductPropertyById" resultMap="com.xmg.shop.mapper.ProductCatalogPropertyValueMapper.BaseResultMap">
+		SELECT * FROM product_catalog_property_value WHERE product_id = #{productId}
+	</select>
+</mapper>
